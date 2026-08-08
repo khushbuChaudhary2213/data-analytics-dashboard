@@ -1,0 +1,28 @@
+# Environment variables
+.env
+.env.*
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+venv/
+.venv/
+env/
+
+# Test data
+test-data/
+
+# Flask
+instance/
+
+# Frontend build
+dist/
+build/
+
+# IDE
+.vscode/
+
+
+# Python generated files
+*.log
