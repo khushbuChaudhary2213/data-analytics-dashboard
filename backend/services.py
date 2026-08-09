@@ -1,4 +1,9 @@
 import pandas as pd
+import requests
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 def flatten_orders(data):
@@ -64,3 +69,42 @@ def clean_data(df):
     df["revenue"] = df["quantity"] * df["price"]
 
     return df
+
+
+rest_countries_api_key = os.getenv("REST_COUNTRIES_API_KEY")
+
+
+def get_country_currency(country):
+    try:
+        url = f"https://api.restcountries.com/countries/v5/names.common/{country}"
+
+        response = requests.get(
+            url,
+            headers={"Authorization": f"Bearer {rest_countries_api_key}"},
+            timeout=10,
+        )
+        if response.status_code != 200:
+            raise Exception("Could not find country")
+
+        country_data = response.json()
+        objects = country_data["data"]["objects"][0]
+        if not objects:
+            raise Exception("Country not found")
+
+        currencies = objects["currencies"][0]
+        currency_code = currencies["code"]
+        currency_name = currencies["name"]
+        currency_symbol = currencies["symbol"]
+        return {
+            "currency_code": currency_code,
+            "currency_name": currency_name,
+            "currency_symbol": currency_symbol,
+        }
+    except Exception as e:
+        return {"status": False, "message": str(e)}
+
+
+def convert_currency(amount, from_currency, to_currency):
+    pass
+    # exchange-rate API
+    # returns converted amount

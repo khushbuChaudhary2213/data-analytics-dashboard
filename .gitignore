@@ -23,6 +23,9 @@ build/
 # IDE
 .vscode/
 
+# Database
+data/*.db
+*.db
 
 # Python generated files
 *.log
