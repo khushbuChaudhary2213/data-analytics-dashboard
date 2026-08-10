@@ -6,6 +6,7 @@ import Header from "./components/Header";
 import Dashboard from "./pages/Dashboard";
 import Sidebar from "./components/Sidebar";
 import Filters from "./components/Filters";
+import NoData from "./components/NoData";
 
 function App() {
   const [filters, setFilters] = useState({
@@ -18,6 +19,8 @@ function App() {
 
   const [summaryData, setSummaryData] = useState(null);
   const [initialData, setInitialData] = useState(null);
+  const [noData, setNoData] = useState(false);
+  const [noDataMessage, setNoDataMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -28,6 +31,7 @@ function App() {
   const fetchAnalytics = async (currentFilters = filters) => {
     setLoading(true);
     setError(null);
+    setNoData(false);
     try {
       const queryParams = new URLSearchParams();
 
@@ -58,12 +62,25 @@ function App() {
         throw new Error("Failed to fetch the summary");
       }
 
-      setSummaryData(res.data);
+      if (res.data.has_data === false) {
+        setNoData(true);
+        setNoDataMessage(
+          res.data.message || "No data found for the selected filters.",
+        );
+        setSummaryData(null);
+        return;
+      }
 
-      if (!initialData) setInitialData(res.data);
+      setNoData(false);
+      setNoDataMessage("");
+      setSummaryData(res.data.data);
+
+      if (!initialData) setInitialData(res.data.data);
     } catch (err) {
       setError(
-        err.response?.data?.message || err.message || "Something went wrong",
+        err.response?.data?.message ||
+          err.message ||
+          "Failed to load analytics.",
       );
       console.err(err);
     } finally {
@@ -97,7 +114,7 @@ function App() {
       (item) => item.status,
     ) || [];
 
-  if (error && !summaryData)
+  if (error)
     return (
       <div className="error-message">Error loading dashboard: {error}</div>
     );
@@ -113,7 +130,16 @@ function App() {
           onApply={handleApplyFilters}
           onReset={handleResetFilters}
         />
-        <Dashboard summaryData={summaryData} loading={loading} />
+        {loading ? (
+          <div className="loading-container">
+            <h2>Loading Analytics....</h2>
+            <div className="spinner"></div>
+          </div>
+        ) : noData ? (
+          <NoData message={noDataMessage} onReset={handleResetFilters} />
+        ) : (
+          <Dashboard summaryData={summaryData} loading={loading} />
+        )}
       </main>
     </div>
   );

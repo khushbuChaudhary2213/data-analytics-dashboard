@@ -1,4 +1,9 @@
-import { DollarSign, ShoppingCart, TrendingUp } from "lucide-react";
+import {
+  DollarSign,
+  ShoppingCart,
+  TrendingUp,
+  AlertTriangle,
+} from "lucide-react";
 import KPICard from "../components/KpiCard";
 import RevenueTrend from "../components/RevenueTrend";
 import DeliveryPerformance from "../components/DeliveryPerformance";
@@ -43,6 +48,12 @@ function Dashboard({ summaryData, loading }) {
               value={`${symbol}${summaryData?.kpis?.average_order_value?.toLocaleString() || 0}`}
               icon={<TrendingUp size={24} />}
               color="purple"
+            />
+            <KPICard
+              title="Delayed Orders"
+              value={summaryData?.kpis?.delayed_orders || 0}
+              icon={<AlertTriangle size={20} />}
+              color="red"
             />
           </div>
 

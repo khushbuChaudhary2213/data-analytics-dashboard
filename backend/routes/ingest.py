@@ -3,7 +3,6 @@ import pandas as pd
 import os
 from parser import parse_json, parse_csv, parse_xml
 from services import flatten_orders, parse_shipments, merge_data, clean_data
-from data.store import storedata
 from database import get_db_connection
 
 ingest_bp = Blueprint("ingest", __name__, url_prefix="/ingest")
@@ -52,13 +51,20 @@ def upload_files():
                 {
                     "success": True,
                     "data": cleaned_data.to_dict(orient="records"),
-                    "message": "Merged And Cleaned Data",
+                    "message": "Files processed and data stored successfully.",
                 }
             ),
             200,
         )
     except Exception as e:
-        return jsonify({"success": False, "message": str(e)})
+        print("UPLOAD ERROR:", e)
+
+        return (
+            jsonify(
+                {"success": False, "message": "Failed to process the uploaded files."}
+            ),
+            500,
+        )
 
 
 # ROUTE FOR JSON FILE
@@ -85,13 +91,18 @@ def ingest_json():
                 {
                     "success": True,
                     "data": flattend_data,
-                    "message": "JSON ingestion API",
+                    "message": "JSON data processed successfully.",
                 }
             ),
             200,
         )
     except Exception as e:
-        return jsonify({"success": False, "message": str(e)})
+        print("JSON INGESTION ERROR:", e)
+
+        return (
+            jsonify({"success": False, "message": "Failed to process JSON file."}),
+            500,
+        )
 
 
 # ROUTE FOR CSV FILE
@@ -111,15 +122,23 @@ def ingest_csv():
 
         conn.close()
 
-        return jsonify(
-            {
-                "succes": True,
-                "data": products_df.to_dict(orient="records"),
-                "message": "CSV ingestion API",
-            }
+        return (
+            jsonify(
+                {
+                    "success": True,
+                    "data": products_df.to_dict(orient="records"),
+                    "message": "CSV data processed successfully.",
+                }
+            ),
+            200,
         )
     except Exception as e:
-        return jsonify({"success": False, "message": str(e)})
+        print("CSV INGESTION ERROR:", e)
+
+        return (
+            jsonify({"success": False, "message": "Failed to process CSV file."}),
+            500,
+        )
 
 
 # ROUTE FOR XML FILE
@@ -140,6 +159,20 @@ def ingest_xml():
         shipments_df.to_sql("shipments", conn, if_exists="replace", index=False)
         conn.close()
 
-        return jsonify({"succes": True, "data": data, "message": "XML ingestion API"})
+        return (
+            jsonify(
+                {
+                    "success": True,
+                    "data": data,
+                    "message": "XML data processed successfully.",
+                }
+            ),
+            200,
+        )
     except Exception as e:
-        return jsonify({"success": False, "message": str(e)})
+        print("XML INGESTION ERROR:", e)
+
+        return (
+            jsonify({"success": False, "message": "Failed to process XML file."}),
+            500,
+        )

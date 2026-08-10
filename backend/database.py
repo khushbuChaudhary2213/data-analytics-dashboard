@@ -30,6 +30,7 @@ def init_db():
                             order_date TEXT,
                             shipment_id TEXT,
                             delivery_days INTEGER,
+                            is_delayed BOOLEAN
                             status TEXT
                         )
                     """)

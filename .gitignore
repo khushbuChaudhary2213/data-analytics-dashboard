@@ -25,7 +25,6 @@ build/
 
 # Database
 data/*.db
-data/
 *.db
 
 # Python generated files

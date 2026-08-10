@@ -1,7 +1,6 @@
 from flask import Blueprint, jsonify, request
 from dotenv import load_dotenv
 import os
-from data.store import storedata
 from services import merge_data, clean_data, get_exchange_rate
 from database import get_db_connection
 import pandas as pd
@@ -22,9 +21,12 @@ def analytics_data():
         if orders.empty or products.empty or shipments.empty:
             return (
                 jsonify(
-                    {"success": False, "message": "Please upload all three files first"}
+                    {
+                        "success": False,
+                        "message": "Required analytics data is not available.",
+                    }
                 ),
-                400,
+                404,
             )
 
         merged_data = merge_data(orders, products, shipments)
@@ -39,14 +41,19 @@ def analytics_data():
             jsonify(
                 {
                     "success": True,
-                    "count": len(cleaned_data),
                     "data": cleaned_data.to_dict(orient="records"),
+                    "message": "Data merged and cleaned successfully."
                 }
             ),
             200,
         )
     except Exception as e:
-        return jsonify({"success": False, "message": str(e)})
+         print("ANALYTICS DATA ERROR:", e)
+
+        return jsonify({
+            "success": False,
+            "message": "Failed to merge and clean analytics data."
+        }), 500
 
 
 BASE_CURRENCY = os.getenv("BASE_CURRENCY")
@@ -71,10 +78,8 @@ def analytics_summary():
                 jsonify(
                     {
                         "success": False,
-                        "message": "No analytics data available. Upload files first.",
-                    }
-                ),
-                400,
+                        "message": "No analytics data available. Please process the data first."
+                    }), 404
             )
 
         df["order_date"] = pd.to_datetime(df["order_date"], errors="coerce")
@@ -103,18 +108,7 @@ def analytics_summary():
                     {
                         "success": True,
                         "message": "No data found for the selected filters.",
-                        "kpis": {
-                            "total_revenue": 0,
-                            "total_orders": 0,
-                            "average_order_value": 0,
-                        },
-                        "revenue_trend": [],
-                        "top_products": [],
-                        "category_revenue": [],
-                        "delivery_performance": {
-                            "average_delivery_days": 0,
-                            "status_counts": [],
-                        },
+                        "has_data": False,
                     }
                 ),
                 200,
@@ -125,10 +119,16 @@ def analytics_summary():
 
         total_orders = df["order_id"].nunique()
 
+        delayed_orders = df.loc[df["is_delayed"], "order_id"].nunique()
+
         average_order_value = total_revenue / total_orders if total_orders > 0 else 0
         converted_average_order_value = average_order_value * exchange_rate
 
-        revenue_trend = df.groupby("order_date")["revenue"].sum().reset_index()
+        revenue_trend = (
+            df.groupby("order_date")
+            .agg(revenue=("revenue", "sum"), orders=("order_id", "nunique"))
+            .reset_index()
+        )
         revenue_trend["revenue"] = revenue_trend["revenue"] * exchange_rate
 
         revenue_trend["order_date"] = revenue_trend["order_date"].dt.strftime(
@@ -159,19 +159,23 @@ def analytics_summary():
             jsonify(
                 {
                     "success": True,
-                    "currency": target_currency,
-                    "exchange_rate": exchange_rate,
-                    "kpis": {
-                        "total_revenue": float(converted_total_revenue),
-                        "total_orders": int(total_orders),
-                        "average_order_value": float(converted_average_order_value),
-                    },
-                    "revenue_trend": revenue_trend,
-                    "top_products": top_products,
-                    "category_revenue": category_revenue,
-                    "delivery_performance": {
-                        "average_delivery_days": float(average_delivery_days),
-                        "status_counts": delivery_status,
+                    "has_data": True,
+                    "data": {
+                        "currency": target_currency,
+                        "exchange_rate": exchange_rate,
+                        "kpis": {
+                            "total_revenue": float(converted_total_revenue),
+                            "total_orders": int(total_orders),
+                            "delayed_orders": int(delayed_orders),
+                            "average_order_value": float(converted_average_order_value),
+                        },
+                        "revenue_trend": revenue_trend,
+                        "top_products": top_products,
+                        "category_revenue": category_revenue,
+                        "delivery_performance": {
+                            "average_delivery_days": float(average_delivery_days),
+                            "status_counts": delivery_status,
+                        },
                     },
                 }
             ),
@@ -179,7 +183,12 @@ def analytics_summary():
         )
 
     except Exception as e:
-        return jsonify({"success": False, "message": str(e)})
+        print("ANALYTICS SUMMARY ERROR:", e)
+
+        return jsonify({
+            "success": False,
+            "message": "Failed to generate analytics summary."
+        }), 500
 
 
 # For testing purpose

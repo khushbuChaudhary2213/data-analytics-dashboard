@@ -67,6 +67,7 @@ def clean_data(df):
 
     # Added new column for aggregation
     df["revenue"] = df["quantity"] * df["price"]
+    df["is_delayed"] = df["status"].str.lower() == "delayed"
 
     return df
 
