@@ -9,6 +9,7 @@ import RevenueTrend from "../components/RevenueTrend";
 import DeliveryPerformance from "../components/DeliveryPerformance";
 import CategoryRevenue from "../components/CategoryRevenue";
 import TopProductsChart from "../components/TopProductsCharts";
+import { useState } from "react";
 
 const currencySymbols = {
   INR: "₹",
@@ -18,6 +19,7 @@ const currencySymbols = {
 };
 
 function Dashboard({ summaryData, loading }) {
+  const [view, setView] = useState("revenue");
   const currency = summaryData?.currency || "INR";
 
   const symbol = currencySymbols[currency] || currency;
@@ -59,9 +61,34 @@ function Dashboard({ summaryData, loading }) {
 
           <div className="charts-grid">
             <div className="chart-card-large">
-              <h3 className="chart-title">Revenue Trend</h3>
+              <div className="chart-header-flex">
+                <h3 className="chart-title">
+                  {view === "revenue" ? "Revenue Trend" : "Orders Trend"}
+                </h3>
+
+                <div className="view-toggle">
+                  <button
+                    className={view === "revenue" ? "active" : ""}
+                    onClick={() => setView("revenue")}
+                  >
+                    Revenue
+                  </button>
+
+                  <button
+                    className={view === "orders" ? "active" : ""}
+                    onClick={() => setView("orders")}
+                  >
+                    Orders
+                  </button>
+                </div>
+              </div>
+
               <div className="chart-container">
-                <RevenueTrend data={summaryData?.revenue_trend} />
+                <RevenueTrend
+                  symbol={symbol}
+                  data={summaryData?.revenue_trend}
+                  view={view}
+                />
               </div>
             </div>
 

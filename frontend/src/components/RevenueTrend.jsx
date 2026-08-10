@@ -9,10 +9,12 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-const RevenueTrend = ({ data }) => {
+const RevenueTrend = ({ symbol, data, view }) => {
   if (!data || data.length === 0) {
-    return <div className="empty-chart-state">No data available</div>;
+    return <div>No data available</div>;
   }
+
+  const isRevenue = view === "revenue";
 
   return (
     <ResponsiveContainer width="100%" height="100%">
@@ -20,17 +22,8 @@ const RevenueTrend = ({ data }) => {
         data={data}
         margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
       >
-        <defs>
-          <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
-            <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
-          </linearGradient>
-        </defs>
-        <CartesianGrid
-          strokeDasharray="3 3"
-          vertical={false}
-          stroke="#f3f4f6"
-        />
+        <CartesianGrid strokeDasharray="3 3" vertical={false} />
+
         <XAxis
           dataKey="order_date"
           axisLine={false}
@@ -38,27 +31,31 @@ const RevenueTrend = ({ data }) => {
           tick={{ fill: "#6b7280", fontSize: 12 }}
           dy={10}
         />
+
         <YAxis
           axisLine={false}
           tickLine={false}
           tick={{ fill: "#6b7280", fontSize: 12 }}
-          tickFormatter={(value) => `$${value}`}
+          tickFormatter={(value) => (isRevenue ? `$${value}` : value)}
         />
+
         <Tooltip
           contentStyle={{
             borderRadius: "8px",
             border: "none",
             boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
           }}
-          formatter={(value) => [`$${value}`, "Revenue"]}
+          formatter={(value) => [
+            isRevenue ? `${symbol} ${value}` : value,
+            isRevenue ? "Revenue" : "Orders",
+          ]}
         />
+
         <Area
           type="monotone"
-          dataKey="revenue"
-          stroke="#2563eb"
-          strokeWidth={3}
-          fillOpacity={1}
-          fill="url(#colorRevenue)"
+          dataKey={view}
+          strokeWidth={2}
+          fillOpacity={0.2}
         />
       </AreaChart>
     </ResponsiveContainer>

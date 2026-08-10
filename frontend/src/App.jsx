@@ -7,6 +7,7 @@ import Dashboard from "./pages/Dashboard";
 import Sidebar from "./components/Sidebar";
 import Filters from "./components/Filters";
 import NoData from "./components/NoData";
+import ErrorMessage from "./components/ErrorMessage";
 
 function App() {
   const [filters, setFilters] = useState({
@@ -82,7 +83,7 @@ function App() {
           err.message ||
           "Failed to load analytics.",
       );
-      console.err(err);
+      console.error("Error", err);
     } finally {
       setLoading(false);
     }
@@ -114,10 +115,7 @@ function App() {
       (item) => item.status,
     ) || [];
 
-  if (error)
-    return (
-      <div className="error-message">Error loading dashboard: {error}</div>
-    );
+  if (error) return <ErrorMessage message={error} />;
 
   return (
     <div className="app-container">

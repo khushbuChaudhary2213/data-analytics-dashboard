@@ -389,7 +389,7 @@
 }
 
 .filter-buttons button:last-child {
-  background-color: #a5a4b7;
+  background-color: var(--text-light);
   color: var(--text-primary);
 }
 
@@ -684,6 +684,37 @@
   }
 }
 
+/* Revenure Trend Toggle */
+
+.view-toggle {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 8px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+}
+
+.view-toggle button {
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: 0.2s ease;
+}
+
+.view-toggle button:hover {
+  background: var(--bg-secondary);
+}
+
+.view-toggle button.active {
+  background: var(--accent);
+  color: white;
+}
+
 /* Chart States */
 
 .empty-chart-state {
@@ -772,9 +803,37 @@
 }
 
 .error-message {
-  padding: 2.5rem;
-  color: #ef4444;
+  min-height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 30px;
+  text-align: left;
+}
+
+.error-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #fee2e2;
+  color: #dc2626;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-weight: 700;
+  font-size: 20px;
+}
+
+.error-message h3 {
+  margin: 0 0 4px;
+  font-size: 16px;
+}
+
+.error-message p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 14px;
 }
 
 @keyframes spin {
