@@ -44,7 +44,7 @@ function Sidebar() {
 
         <nav className="sidebar-nav">
           <a
-            href="#"
+            href="/dashboard"
             className="nav-item"
             onClick={() => setIsMobileOpen(false)}
           >

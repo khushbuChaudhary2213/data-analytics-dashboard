@@ -1,4 +1,4 @@
-import { User, Filter } from "lucide-react";
+import { User } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
 
 function Header({ onF }) {
