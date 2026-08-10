@@ -22,7 +22,7 @@ function Filters({ categories, statuses, onApply, onReset }) {
     setStatus("All");
     setStartDate("");
     setEndDate("");
-    setCurrency("");
+    setCurrency("INR");
 
     onReset();
   };
