@@ -42,18 +42,23 @@ def analytics_data():
                 {
                     "success": True,
                     "data": cleaned_data.to_dict(orient="records"),
-                    "message": "Data merged and cleaned successfully."
+                    "message": "Data merged and cleaned successfully.",
                 }
             ),
             200,
         )
     except Exception as e:
-         print("ANALYTICS DATA ERROR:", e)
+        print("ANALYTICS DATA ERROR:", e)
 
-        return jsonify({
-            "success": False,
-            "message": "Failed to merge and clean analytics data."
-        }), 500
+        return (
+            jsonify(
+                {
+                    "success": False,
+                    "message": "Failed to merge and clean analytics data.",
+                }
+            ),
+            500,
+        )
 
 
 BASE_CURRENCY = os.getenv("BASE_CURRENCY")
@@ -66,10 +71,36 @@ def analytics_summary():
         status = request.args.get("status")
         start_date = request.args.get("start_date")
         end_date = request.args.get("end_date")
-
         target_currency = request.args.get("currency", BASE_CURRENCY).upper()
 
-        exchange_rate = get_exchange_rate(BASE_CURRENCY, target_currency)
+        # Date Validation
+        start = pd.to_datetime(start_date) if start_date else None
+        end = pd.to_datetime(end_date) if end_date else None
+
+        if start and end and start > end:
+            return (
+                jsonify(
+                    {
+                        "success": False,
+                        "message": "Start date cannot be after end date.",
+                    }
+                ),
+                400,
+            )
+
+        # Currency Validation
+        try:
+            exchange_rate = get_exchange_rate(BASE_CURRENCY, target_currency)
+        except Exception:
+            return (
+                jsonify(
+                    {
+                        "success": False,
+                        "message": f"Unsupported currency: {target_currency}",
+                    }
+                ),
+                400,
+            )
 
         conn = get_db_connection()
         df = pd.read_sql("SELECT * FROM analytics_data", conn)
@@ -78,8 +109,10 @@ def analytics_summary():
                 jsonify(
                     {
                         "success": False,
-                        "message": "No analytics data available. Please process the data first."
-                    }), 404
+                        "message": "No analytics data available. Please process the data first.",
+                    }
+                ),
+                404,
             )
 
         df["order_date"] = pd.to_datetime(df["order_date"], errors="coerce")
@@ -185,15 +218,9 @@ def analytics_summary():
     except Exception as e:
         print("ANALYTICS SUMMARY ERROR:", e)
 
-        return jsonify({
-            "success": False,
-            "message": "Failed to generate analytics summary."
-        }), 500
-
-
-# For testing purpose
-# @analytics_bp.route("/api", methods=["GET"])
-# def example():
-#     data = get_exchange_rate("USD", "INR")
-
-#     return {"status": True, "data": data}
+        return (
+            jsonify(
+                {"success": False, "message": "Failed to generate analytics summary."}
+            ),
+            500,
+        )
