@@ -38,6 +38,10 @@
   --shadow: rgba(0, 0, 0, 0.2);
 }
 
+body {
+  overflow: hidden;
+}
+
 .app-container {
   display: flex;
   height: 100vh;
@@ -318,13 +322,16 @@
   display: flex;
   align-items: flex-end;
   gap: 14px;
-
+  width: 100%;
   padding: 16px;
   margin-bottom: 24px;
 
-  background-color: var(--card-bg);
+  background-color: var(--bg-secondary);
   border: 1px solid var(--border-color);
   border-radius: 12px;
+
+  position: static;
+  z-index: 1;
 }
 
 .filter-group {
@@ -437,9 +444,14 @@
 
 /* Dashboard Layout */
 
+.dashboard-content {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
 .dashboard-body {
   flex: 1;
-  overflow: auto;
   padding: 2rem;
 }
 
@@ -594,7 +606,7 @@
 .kpi-card.red {
   --kpi-color: #dc2626;
   --kpi-bg-color: rgba(220, 38, 38, 0.1);
-  --kpi-light: #fee2e243;
+  --kpi-light: #f8aaaa54;
 
   background-color: var(--kpi-bg-color);
 }
