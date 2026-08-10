@@ -3,7 +3,10 @@ import pandas as pd
 import xml.etree.ElementTree as ET
 
 
-def parse_json(file):
+def parse_json(source):
+    if isinstance(source, str):
+        with open(source, "r", encoding="utf-8") as file:
+            return json.load(file)
     return json.load(file)
 
 

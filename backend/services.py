@@ -104,7 +104,30 @@ def get_country_currency(country):
         return {"status": False, "message": str(e)}
 
 
-def convert_currency(amount, from_currency, to_currency):
-    pass
-    # exchange-rate API
-    # returns converted amount
+def get_exchange_rate(from_currency, to_currency):
+    try:
+        if from_currency == to_currency:
+            return 1
+
+        url = "https://api.restcountries.com/currencies/v1/convert"
+
+        response = requests.get(
+            url,
+            params={
+                "from": from_currency,
+                "to": to_currency,
+                "amount": 1,
+            },
+            headers={"Authorization": f"Bearer {rest_countries_api_key}"},
+            timeout=10,
+        )
+
+        if response.status_code != 200:
+            raise Exception("Currency conversion failed")
+
+        data = response.json()
+
+        return float(data["data"]["objects"][0]["rate"])
+
+    except Exception as e:
+        raise Exception(f"Currency conversion failed: {str(e)}")

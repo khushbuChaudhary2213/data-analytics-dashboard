@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request
 import pandas as pd
+import os
 from parser import parse_json, parse_csv, parse_xml
 from services import flatten_orders, parse_shipments, merge_data, clean_data
 from data.store import storedata
@@ -7,19 +8,27 @@ from database import get_db_connection
 
 ingest_bp = Blueprint("ingest", __name__, url_prefix="/ingest")
 
+base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+data_dir = os.path.join(base_dir, "data")
+
 
 # ONE ROUTE FOR ALL THE FILES
 @ingest_bp.route("/upload", methods=["POST"])
 def upload_files():
-    orders_file = request.files.get("orders")
-    products_file = request.files.get("products")
-    shipments_file = request.files.get("shipments")
+    orders_upload = request.files.get("orders")
+    products_upload = request.files.get("products")
+    shipments_upload = request.files.get("shipments")
 
-    if not orders_file or not products_file or not shipments_file:
-        return (
-            jsonify({"success": False, "message": "All three files are required"}),
-            400,
-        )
+    # If files are uploaded, use them
+    if orders_upload and products_upload and shipments_upload:
+        orders_file = orders_upload
+        products_file = products_upload
+        shipments_file = shipments_upload
+
+    else:
+        orders_file = os.path.join(data_dir, "orders.json")
+        products_file = os.path.join(data_dir, "products.csv")
+        shipments_file = os.path.join(data_dir, "shipments.xml")
 
     try:
         orders_json = parse_json(orders_file)
@@ -56,19 +65,10 @@ def upload_files():
 @ingest_bp.route("/json", methods=["POST"])
 def ingest_json():
     try:
-        if "file" not in request.files:
-            return jsonify({"error": "No file part in the request"}), 400
-
-        file = request.files.get("file")
-
-        if file.filename == "":
-            return jsonify({"error": "No selected file"}), 400
-
-        if not file.filename.endswith(".json"):
-            return (
-                jsonify({"success": False, "message": "Only JSON files are allowed"}),
-                400,
-            )
+        if "file" in request.files:
+            file = request.files.get("file")
+        else:
+            file = os.path.join(data_dir, "orders.json")
 
         data = parse_json(file)
         flattend_data = flatten_orders(data)
@@ -98,19 +98,10 @@ def ingest_json():
 @ingest_bp.route("/csv", methods=["POST"])
 def ingest_csv():
     try:
-        if "file" not in request.files:
-            return jsonify({"error": "No file part in the request"}), 400
-
-        file = request.files.get("file")
-
-        if file.filename == "":
-            return jsonify({"error": "No selected file"}), 400
-
-        if not file.filename.endswith(".csv"):
-            return (
-                jsonify({"success": False, "message": "Only CSV files are allowed"}),
-                400,
-            )
+        if "file" in request.files:
+            file = request.files.get("file")
+        else:
+            file = os.path.join(data_dir, "products.csv")
 
         products_df = parse_csv(file)
         # storedata["products"] = data
@@ -135,19 +126,11 @@ def ingest_csv():
 @ingest_bp.route("/xml", methods=["POST"])
 def ingest_xml():
     try:
-        if "file" not in request.files:
-            return jsonify({"error": "No file part in the request"}), 400
+        if "file" in request.files:
+            file = request.files.get("file")
+        else:
+            file = os.path.join(data_dir, "shipments.xml")
 
-        file = request.files.get("file")
-
-        if file.filename == "":
-            return jsonify({"error": "No selected file"}), 400
-
-        if not file.filename.endswith(".xml"):
-            return (
-                jsonify({"success": False, "message": "Only XML files are allowed"}),
-                400,
-            )
         root = parse_xml(file)
         data = parse_shipments(root)
 
