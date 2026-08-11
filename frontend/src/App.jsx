@@ -60,7 +60,7 @@ function App() {
 
       const res = await api.get(url);
 
-      if (res.statusText !== "OK") {
+      if (res.statusText && res.statusText !== "OK") {
         throw new Error("Failed to fetch the summary");
       }
 
