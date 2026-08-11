@@ -3,6 +3,9 @@ import {
   ShoppingCart,
   TrendingUp,
   AlertTriangle,
+  IndianRupee,
+  Euro,
+  PoundSterling,
 } from "lucide-react";
 import KPICard from "../components/KpiCard";
 import RevenueTrend from "../components/RevenueTrend";
@@ -18,11 +21,19 @@ const currencySymbols = {
   GBP: "£",
 };
 
+const currencyIcons = {
+  INR: IndianRupee,
+  USD: DollarSign,
+  EUR: Euro,
+  GBP: PoundSterling,
+};
+
 function Dashboard({ summaryData, loading }) {
   const [view, setView] = useState("revenue");
   const currency = summaryData?.currency || "INR";
 
   const symbol = currencySymbols[currency] || currency;
+  const CurrencyIcon = currencyIcons[currency] || IndianRupee;
 
   return (
     <div className="dashboard-body">
@@ -36,7 +47,7 @@ function Dashboard({ summaryData, loading }) {
             <KPICard
               title="Total Revenue"
               value={`${symbol}${summaryData?.kpis?.total_revenue?.toLocaleString() || 0}`}
-              icon={<DollarSign size={24} />}
+              icon={<CurrencyIcon size={24} />}
               color="blue"
             />
             <KPICard
@@ -98,10 +109,10 @@ function Dashboard({ summaryData, loading }) {
                   Delivery Status
                 </h3>
                 <span className="chart-badge">
-                  Avg:
+                  Avg:{" "}
                   {summaryData?.delivery_performance?.average_delivery_days?.toFixed(
-                    0,
-                  )}
+                    1,
+                  )}{" "}
                   Days
                 </span>
               </div>

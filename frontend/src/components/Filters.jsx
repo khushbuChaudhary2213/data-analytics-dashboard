@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-function Filters({ categories, statuses, onApply, onReset }) {
+function Filters({ categories, statuses, onApply, onReset, disabled }) {
   const [category, setCategory] = useState("All");
   const [status, setStatus] = useState("All");
   const [startDate, setStartDate] = useState("");
@@ -47,6 +47,7 @@ function Filters({ categories, statuses, onApply, onReset }) {
           type="date"
           value={startDate}
           onChange={(e) => setStartDate(e.target.value)}
+          disabled={disabled}
         />
       </div>
 
@@ -57,15 +58,19 @@ function Filters({ categories, statuses, onApply, onReset }) {
           type="date"
           value={endDate}
           onChange={(e) => setEndDate(e.target.value)}
+          disabled={disabled}
         />
       </div>
 
       <div className="filter-group">
         <label>Category</label>
 
-        <select value={category} onChange={(e) => setCategory(e.target.value)}>
+        <select
+          value={category}
+          disabled={disabled}
+          onChange={(e) => setCategory(e.target.value)}
+        >
           <option value="All">All</option>
-
           {categories.map((category) => (
             <option key={category} value={category}>
               {category}
@@ -77,9 +82,12 @@ function Filters({ categories, statuses, onApply, onReset }) {
       <div className="filter-group">
         <label>Status</label>
 
-        <select value={status} onChange={(e) => setStatus(e.target.value)}>
+        <select
+          value={status}
+          disabled={disabled}
+          onChange={(e) => setStatus(e.target.value)}
+        >
           <option value="All">All</option>
-
           {statuses.map((status) => (
             <option key={status} value={status}>
               {status}
@@ -90,7 +98,11 @@ function Filters({ categories, statuses, onApply, onReset }) {
       <div className="filter-group">
         <label>Currency</label>
 
-        <select value={currency} onChange={(e) => setCurrency(e.target.value)}>
+        <select
+          value={currency}
+          disabled={disabled}
+          onChange={(e) => setCurrency(e.target.value)}
+        >
           <option value="INR">INR (₹)</option>
           <option value="USD">USD ($)</option>
           <option value="EUR">EUR (€)</option>
@@ -99,9 +111,13 @@ function Filters({ categories, statuses, onApply, onReset }) {
       </div>
 
       <div className="filter-buttons">
-        <button onClick={handleApply}>Apply</button>
+        <button onClick={handleApply} disabled={disabled}>
+          Apply
+        </button>
 
-        <button onClick={handleReset}>Reset</button>
+        <button onClick={handleReset} disabled={disabled}>
+          Reset
+        </button>
       </div>
     </div>
   );

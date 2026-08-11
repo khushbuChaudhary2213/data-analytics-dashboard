@@ -121,26 +121,27 @@ function App() {
       <Sidebar />
       <main className="main-content">
         <Header />
-        {loading ? (
-          <div className="loading-container">
-            <h2>Loading Analytics....</h2>
-            <div className="spinner"></div>
-          </div>
-        ) : error ? (
-          <ErrorMessage message={error} />
-        ) : noData ? (
-          <NoData message={noDataMessage} onReset={handleResetFilters} />
-        ) : (
-          <div className="dashboard-content">
-            <Filters
-              categories={categories}
-              statuses={statuses}
-              onApply={handleApplyFilters}
-              onReset={handleResetFilters}
-            />
+        <div className="dashboard-content">
+          <Filters
+            categories={categories}
+            statuses={statuses}
+            onApply={handleApplyFilters}
+            onReset={handleResetFilters}
+            disabled={loading || error || noData}
+          />
+          {loading ? (
+            <div className="loading-container">
+              <h2>Loading Analytics....</h2>
+              <div className="spinner"></div>
+            </div>
+          ) : error ? (
+            <ErrorMessage message={error} />
+          ) : noData ? (
+            <NoData message={noDataMessage} onReset={handleResetFilters} />
+          ) : (
             <Dashboard summaryData={summaryData} loading={loading} />
-          </div>
-        )}
+          )}
+        </div>
       </main>
     </div>
   );

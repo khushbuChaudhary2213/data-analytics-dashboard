@@ -404,6 +404,11 @@ body {
   opacity: 0.85;
 }
 
+.filter-buttons button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
 /* Responsive */
 
 @media (max-width: 900px) {
