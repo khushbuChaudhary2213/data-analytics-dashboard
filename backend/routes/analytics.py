@@ -13,10 +13,10 @@ load_dotenv()
 @analytics_bp.route("/data", methods=["GET"])
 def analytics_data():
     try:
-        conn = get_db_connection()
-        orders = pd.read_sql("SELECT * FROM orders", conn)
-        products = pd.read_sql("SELECT * FROM products", conn)
-        shipments = pd.read_sql("SELECT * FROM shipments", conn)
+        engine = get_db_connection()
+        orders = pd.read_sql("SELECT * FROM orders", engine)
+        products = pd.read_sql("SELECT * FROM products", engine)
+        shipments = pd.read_sql("SELECT * FROM shipments", engine)
 
         if orders.empty or products.empty or shipments.empty:
             return (
@@ -32,11 +32,8 @@ def analytics_data():
         merged_data = merge_data(orders, products, shipments)
         cleaned_data = clean_data(merged_data)
 
-        conn = get_db_connection()
+        cleaned_data.to_sql("analytics_data", engine, if_exists="append", index=False)
 
-        cleaned_data.to_sql("analytics_data", conn, if_exists="replace", index=False)
-
-        conn.close()
         return (
             jsonify(
                 {
@@ -102,8 +99,8 @@ def analytics_summary():
                 400,
             )
 
-        conn = get_db_connection()
-        df = pd.read_sql("SELECT * FROM analytics_data", conn)
+        engine = get_db_connection()
+        df = pd.read_sql("SELECT * FROM analytics_data", engine)
         if df.empty:
             return (
                 jsonify(
