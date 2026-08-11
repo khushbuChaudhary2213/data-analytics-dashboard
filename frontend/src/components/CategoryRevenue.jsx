@@ -10,7 +10,7 @@ import {
   Cell,
 } from "recharts";
 
-const CategoryRevenue = ({ data }) => {
+const CategoryRevenue = ({ symbol, data }) => {
   if (!data || data.length === 0) {
     return <div className="empty-chart-state">No data available</div>;
   }
@@ -27,7 +27,7 @@ const CategoryRevenue = ({ data }) => {
         <CartesianGrid
           strokeDasharray="3 3"
           vertical={false}
-          stroke="#f3f4f6"
+          stroke="#c5c5c5"
         />
         <XAxis
           dataKey="category"
@@ -40,7 +40,7 @@ const CategoryRevenue = ({ data }) => {
           axisLine={false}
           tickLine={false}
           tick={{ fill: "#6b7280", fontSize: 12 }}
-          tickFormatter={(value) => `$${value}`}
+          tickFormatter={(value) => `${symbol}${value}`}
         />
         <Tooltip
           cursor={{ fill: "#f3f4f6" }}
@@ -49,7 +49,7 @@ const CategoryRevenue = ({ data }) => {
             border: "none",
             boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
           }}
-          formatter={(value) => [`$${value}`, "Revenue"]}
+          formatter={(value) => [`${symbol}${value}`, "Revenue"]}
         />
         <Bar dataKey="revenue" radius={[6, 6, 0, 0]}>
           {data.map((entry, index) => (

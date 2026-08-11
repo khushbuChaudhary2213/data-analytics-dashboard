@@ -117,14 +117,20 @@ function Dashboard({ summaryData, loading }) {
             <div className="chart-card-large">
               <h3 className="chart-title">Revenue by Category</h3>
               <div className="chart-container-large">
-                <CategoryRevenue data={summaryData?.category_revenue} />
+                <CategoryRevenue
+                  symbol={symbol}
+                  data={summaryData?.category_revenue}
+                />
               </div>
             </div>
 
             <div className="chart-card">
               <h3 className="chart-title">Top Products</h3>
               <div className="chart-container-large">
-                <TopProductsChart data={summaryData?.top_products} />
+                <TopProductsChart
+                  symbol={symbol}
+                  data={summaryData?.top_products}
+                />
               </div>
             </div>
           </div>

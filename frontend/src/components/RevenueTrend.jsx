@@ -36,7 +36,7 @@ const RevenueTrend = ({ symbol, data, view }) => {
           axisLine={false}
           tickLine={false}
           tick={{ fill: "#6b7280", fontSize: 12 }}
-          tickFormatter={(value) => (isRevenue ? `$${value}` : value)}
+          tickFormatter={(value) => (isRevenue ? `${symbol}${value}` : value)}
         />
 
         <Tooltip

@@ -10,7 +10,7 @@ import {
   Cell,
 } from "recharts";
 
-const TopProductsChart = ({ data }) => {
+const TopProductsChart = ({ symbol, data }) => {
   if (!data || data.length === 0) {
     return <div className="empty-chart-state">No data available</div>;
   }
@@ -29,16 +29,16 @@ const TopProductsChart = ({ data }) => {
       >
         <CartesianGrid
           strokeDasharray="3 3"
-          horizontal={true}
-          vertical={false}
-          stroke="#f3f4f6"
+          horizontal={false}
+          vertical={true}
+          stroke="#b9b9b9"
         />
 
         <XAxis
           type="number"
-          axisLine={false}
+          axisLine={{ stroke: "#d0d6e3" }}
           tickLine={false}
-          tickFormatter={(value) => `$${value}`}
+          tickFormatter={(value) => `${symbol}${value}`}
           tick={{ fill: "#6b7280", fontSize: 12 }}
         />
 
@@ -58,7 +58,7 @@ const TopProductsChart = ({ data }) => {
             border: "none",
             boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
           }}
-          formatter={(value) => [`$${value}`, "Revenue"]}
+          formatter={(value) => [`${symbol}${value}`, "Revenue"]}
         />
 
         <Bar dataKey="revenue" radius={[0, 6, 6, 0]}>
