@@ -246,7 +246,7 @@ BASE_CURRENCY=USD
 ### Frontend
 
 ```env
-REACT_APP_API_URL=your_backend_url
+REACT_APP_BACKEND_URL=your_backend_url
 ```
 
 ---

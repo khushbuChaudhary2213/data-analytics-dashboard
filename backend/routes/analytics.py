@@ -32,7 +32,7 @@ def analytics_data():
         merged_data = merge_data(orders, products, shipments)
         cleaned_data = clean_data(merged_data)
 
-        cleaned_data.to_sql("analytics_data", engine, if_exists="append", index=False)
+        cleaned_data.to_sql("analytics_data", engine, if_exists="replace", index=False)
 
         return (
             jsonify(
