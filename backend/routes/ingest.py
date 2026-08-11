@@ -30,21 +30,25 @@ def upload_files():
         shipments_file = os.path.join(data_dir, "shipments.xml")
 
     try:
+        engine = get_db_connection()
+
         orders_json = parse_json(orders_file)
         orders_data = flatten_orders(orders_json)
         orders_df = pd.DataFrame(orders_data)
+        orders_df.to_sql("orders", engine, if_exists="append", index=False)
 
         products_df = parse_csv(products_file)
+        products_df.to_sql("products", engine, if_exists="append", index=False)
 
         shipments_root = parse_xml(shipments_file)
         shipments_data = parse_shipments(shipments_root)
         shipments_df = pd.DataFrame(shipments_data)
+        shipments_df.to_sql("shipments", engine, if_exists="append", index=False)
 
         merged_data = merge_data(orders_df, products_df, shipments_df)
         cleaned_data = clean_data(merged_data)
 
-        conn = get_db_connection()
-        cleaned_data.to_sql("analytics_data", conn, if_exists="replace", index=False)
+        cleaned_data.to_sql("analytics_data", engine, if_exists="append", index=False)
 
         return (
             jsonify(
@@ -82,9 +86,8 @@ def ingest_json():
         # storedata["orders"] = pd.DataFrame(flattend_data)
 
         orders_df = pd.DataFrame(flattend_data)
-        conn = get_db_connection()
-        orders_df.to_sql("orders", conn, if_exists="replace", index=False)
-        conn.close()
+        engine = get_db_connection()
+        orders_df.to_sql("orders", engine, if_exists="append", index=False)
 
         return (
             jsonify(
@@ -117,10 +120,8 @@ def ingest_csv():
         products_df = parse_csv(file)
         # storedata["products"] = data
 
-        conn = get_db_connection()
-        products_df.to_sql("products", conn, if_exists="replace", index=False)
-
-        conn.close()
+        engine = get_db_connection()
+        products_df.to_sql("products", engine, if_exists="append", index=False)
 
         return (
             jsonify(
@@ -155,9 +156,8 @@ def ingest_xml():
 
         # storedata["shipments"] = pd.DataFrame(data)
         shipments_df = pd.DataFrame(data)
-        conn = get_db_connection()
-        shipments_df.to_sql("shipments", conn, if_exists="replace", index=False)
-        conn.close()
+        engine = get_db_connection()
+        shipments_df.to_sql("shipments", engine, if_exists="append", index=False)
 
         return (
             jsonify(

@@ -1,70 +1,79 @@
-import sqlite3
 import os
+from sqlalchemy import create_engine, text
+from dotenv import load_dotenv
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DATA_DIR = os.path.join(BASE_DIR, "data")
-os.makedirs(DATA_DIR, exist_ok=True)
+load_dotenv()
 
-DATABASE = os.path.join(DATA_DIR, "analytics.db")
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+if not DATABASE_URL:
+    raise RuntimeError("DATABASE_URL is not configured")
+
+engine = create_engine(
+    DATABASE_URL,
+    pool_pre_ping=True,
+)
 
 
 def get_db_connection():
-    return sqlite3.connect(DATABASE)
+    return engine
 
 
 def init_db():
     try:
-        conn = get_db_connection()
-        conn.execute("""
-                        CREATE TABLE IF NOT EXISTS analytics_data (
-                            id INTEGER PRIMARY KEY AUTOINCREMENT,
-                            order_id TEXT,
-                            customer_id TEXT,
-                            customer_name TEXT,
+        with engine.begin() as conn:
+            conn.execute(text("""
+                            CREATE TABLE IF NOT EXISTS analytics_data (
+                                id SERIAL PRIMARY KEY,
+                                order_id TEXT,
+                                customer_id TEXT,
+                                customer_name TEXT,
+                                product_id TEXT,
+                                product_name TEXT,
+                                category TEXT,
+                                quantity INTEGER,
+                                price DOUBLE PRECISION,
+                                revenue DOUBLE PRECISION,
+                                order_date TEXT,
+                                shipment_id TEXT,
+                                delivery_days INTEGER,
+                                is_delayed BOOLEAN,
+                                status TEXT
+                            )
+                        """))
+
+            conn.execute(text("""
+                    CREATE TABLE IF NOT EXISTS orders (
+                        order_id TEXT,
+                        customer_id TEXT,
+                        customer_name TEXT,
+                        product_id TEXT,
+                        quantity INTEGER,
+                        price DOUBLE PRECISION,
+                        order_date TEXT
+                    )
+                """))
+
+            conn.execute(text("""
+                        CREATE TABLE IF NOT EXISTS products (
                             product_id TEXT,
                             product_name TEXT,
-                            category TEXT,
-                            quantity INTEGER,
-                            price REAL,
-                            revenue REAL,
-                            order_date TEXT,
+                            category TEXT
+                        )
+                    """))
+
+            conn.execute(text("""
+                        CREATE TABLE IF NOT EXISTS shipments (
                             shipment_id TEXT,
+                            order_id TEXT,
                             delivery_days INTEGER,
-                            is_delayed BOOLEAN,
                             status TEXT
                         )
-                    """)
+                    """))
+            print("Database initialized successfully.")
 
-        conn.execute("""
-                CREATE TABLE IF NOT EXISTS orders (
-                    order_id TEXT,
-                    customer_id TEXT,
-                    customer_name TEXT,
-                    product_id TEXT,
-                    quantity INTEGER,
-                    price REAL,
-                    order_date TEXT
-                )
-            """)
-
-        conn.execute("""
-                    CREATE TABLE IF NOT EXISTS products (
-                        product_id TEXT,
-                        product_name TEXT,
-                        category TEXT
-                    )
-                """)
-
-        conn.execute("""
-                    CREATE TABLE IF NOT EXISTS shipments (
-                        shipment_id TEXT,
-                        order_id TEXT,
-                        delivery_days INTEGER,
-                        status TEXT
-                    )
-                """)
-        conn.commit()
     except Exception as e:
         print("DATABASE ERROR: ", e)
     finally:
-        conn.close()
+        if conn:
+            conn.close()
