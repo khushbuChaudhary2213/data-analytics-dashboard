@@ -1,8 +1,8 @@
-# 📊 Data Analytics Dashboard
+# Data Analytics Dashboard
 
 A full-stack data analytics dashboard that ingests **JSON, CSV, and XML data**, processes and cleans it using Pandas, stores the processed data in PostgreSQL, and presents interactive business insights through a React dashboard.
 
-## 🚀 Live Demo
+## Live Demo
 
 **Frontend:**
 https://data-analytics-dashboard-nine.vercel.app
@@ -12,7 +12,7 @@ https://data-analytics-dashboard-dci3.onrender.com
 
 ---
 
-## ✨ Features
+## Features
 
 ### Data Ingestion
 
@@ -56,7 +56,7 @@ https://data-analytics-dashboard-dci3.onrender.com
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 ### Frontend
 
@@ -84,7 +84,7 @@ https://data-analytics-dashboard-dci3.onrender.com
 
 ---
 
-## 🔄 Data Flow
+## Data Flow
 
 ```text
 JSON / CSV / XML
@@ -106,7 +106,7 @@ React Dashboard
 
 ---
 
-## 🗄️ Database
+## Database
 
 The application uses **PostgreSQL** for persistent data storage.
 
@@ -121,7 +121,7 @@ The database layer is separated from the application logic, allowing the backend
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```text
 data-analytics-dashboard/
@@ -150,7 +150,7 @@ data-analytics-dashboard/
 
 ---
 
-## ⚙️ Local Setup
+## Local Setup
 
 ### 1. Clone the repository
 
@@ -218,7 +218,7 @@ http://localhost:3000
 
 ---
 
-## 🌐 Deployment
+## Deployment
 
 The application is deployed using:
 
@@ -232,7 +232,7 @@ Environment variables are configured separately on the deployment platforms to k
 
 ---
 
-## 🔐 Environment Variables
+## Environment Variables
 
 ### Backend
 
@@ -251,7 +251,7 @@ REACT_APP_BACKEND_URL=your_backend_url
 
 ---
 
-## 🎯 Project Objective
+## Project Objective
 
 The goal of this project is to build a complete data analytics pipeline that can accept datasets from multiple formats, transform and combine them into a unified structure, store the processed data, and provide meaningful business insights through an interactive dashboard.
 
@@ -259,7 +259,7 @@ The project demonstrates full-stack development along with practical data proces
 
 ---
 
-## 👩‍💻 Author
+## Author
 
 **Khushbu Chaudhary**
 
