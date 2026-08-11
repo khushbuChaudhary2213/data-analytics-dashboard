@@ -7,7 +7,16 @@ function Filters({ categories, statuses, onApply, onReset }) {
   const [endDate, setEndDate] = useState("");
   const [currency, setCurrency] = useState("INR");
 
+  const isDefaultFilters =
+    category === "All" &&
+    status === "All" &&
+    startDate === "" &&
+    endDate === "" &&
+    currency === "INR";
+
   const handleApply = () => {
+    if (isDefaultFilters) return;
+
     onApply({
       category,
       status,
@@ -18,6 +27,8 @@ function Filters({ categories, statuses, onApply, onReset }) {
   };
 
   const handleReset = () => {
+    if (isDefaultFilters) return;
+
     setCategory("All");
     setStatus("All");
     setStartDate("");
